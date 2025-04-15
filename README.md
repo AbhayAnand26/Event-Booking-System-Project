@@ -1,6 +1,6 @@
 ---
 
-# 🚀 EventBooker.co.in – Event Booking System
+# Event Booking System
 
 **Live Demo:** [EventBooker.co.in](https://event-booking-system-project.vercel.app/)
 
