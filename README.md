@@ -1,5 +1,4 @@
----
-#EventBooker.co.in
+# EventBooker.co.in
 **Live Demo:** [EventBooker.co.in](https://event-booking-system-project.vercel.app/)
 
 ## 📌 Overview  
@@ -67,5 +66,3 @@ MIT License – See `LICENSE` file.
 - CSS inspired by modern UI systems  
 
 © 2025 EventBooker.co.in | All Rights Reserved
-
----
