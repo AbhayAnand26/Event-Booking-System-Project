@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventBooker.co.in</title>
+    <link rel="icon" type="image/png" href="./images/eventbooker.jpg">
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="./responsive.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            padding: 20px 0;
+            font-size: 32px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .booking-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .calendar-container {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .booking-info {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .calendar-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .month-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f5f7fa;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .month-navigation button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #2c3e50;
+        }
+        
+        .month-year {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .calendar th {
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .calendar td {
+            padding: 15px 10px;
+            text-align: center;
+            border: 1px solid #eee;
+            cursor: pointer;
+            position: relative;
+            height: 60px;
+            vertical-align: top;
+        }
+        
+        .calendar td:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .date-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .inactive {
+            color: #ccc;
+            background-color: #f9f9f9;
+        }
+        
+        .today {
+            border: 2px solid #3498db;
+        }
+        
+        .available {
+            background-color: #e8f7e8;
+        }
+        
+        .booked {
+            background-color: #ffe6e6;
+        }
+        
+        .special-event {
+            border: 2px solid #3498db;
+        }
+        
+        .selected {
+            background-color: #f5f5dc;
+            border: 2px solid #f39c12;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .legend-available {
+            background-color: #e8f7e8;
+        }
+        
+        .legend-booked {
+            background-color: #ffe6e6;
+        }
+        
+        .legend-special {
+            border: 2px solid #3498db;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .event-indicator {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+        }
+        
+        .event-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #3498db;
+        }
+        
+        .event-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+            width: 200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            pointer-events: none;
+        }
+        
+        .event-tooltip-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .event-tooltip-time {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .event-tooltip-location {
+            font-size: 12px;
+            font-style: italic;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background-color: #0c9315;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #086226;
+        }
+        
+        .event-details {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f7fa;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .event-details h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .event-info {
+            margin-bottom: 5px;
+        }
+        
+        .event-info strong {
+            display: inline-block;
+            min-width: 80px;
+        }
+        
+        .tickets-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .ticket-type {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .ticket-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .quantity {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 5px 0;
+        }
+        
+        .booking-summary {
+            margin-top: 20px;
+            background-color: #f5f7fa;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">EventBooker.co.in</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="Events.html">Events</a></li>
+                    <li><a href="Booknow.html">Book Now</a></li>
+                    <li><a href="Contacts.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Event Booking Calendar</h1>
+        
+        <div class="booking-container">
+            <div class="calendar-container">
+                <div class="calendar-header">Select a Date</div>
+                
+                <div class="month-navigation">
+                    <button id="prev-month">&lt;</button>
+                    <div class="month-year" id="month-year">April 2025</div>
+                    <button id="next-month">&gt;</button>
+                </div>
+                
+                <table class="calendar" id="calendar">
+                    <thead>
+                        <tr>
+                            <th>Sun</th>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendar-body">
+                        <!-- Calendar will be generated with JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-available"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-booked"></div>
+                        <span>Booked</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-special"></div>
+                        <span>Special Event</span>
+                    </div>
+                </div>
+                
+                <div class="event-tooltip" id="event-tooltip"></div>
+            </div>
+            
+            <div class="booking-info">
+                <div class="calendar-header">Booking Information</div>
+                
+                <div id="event-details" class="event-details">
+                    <h3 id="event-title">Event Title</h3>
+                    <div class="event-info"><strong>Date:</strong> <span id="event-date">April 15, 2025</span></div>
+                    <div class="event-info"><strong>Time:</strong> <span id="event-time">7:00 PM - 9:00 PM</span></div>
+                    <div class="event-info"><strong>Location:</strong> <span id="event-location">Grand Hall, Downtown</span></div>
+                    <p id="event-description" style="margin-top: 10px;">
+                        Event description will appear here with all the details about the event including activities, speakers, and more information.
+                    </p>
+                    
+                    <div class="tickets-section">
+                        <h3>Select Tickets</h3>
+                        
+                        <div class="ticket-type">
+                            <div>
+                                <div style="font-weight: bold;">General Ticket</div>
+                                <div>₹2100.00</div>
+                            </div>
+                            <div class="ticket-controls">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateQuantity('general', -1)">-</button>
+                                    <input type="text" class="quantity" id="general-quantity" value="0" readonly>
+                                    <button class="quantity-btn" onclick="updateQuantity('general', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-type">
+                            <div>
+                                <div style="font-weight: bold;">VIP Access</div>
+                                <div>₹7500.00</div>
+                            </div>
+                            <div class="ticket-controls">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateQuantity('vip', -1)">-</button>
+                                    <input type="text" class="quantity" id="vip-quantity" value="0" readonly>
+                                    <button class="quantity-btn" onclick="updateQuantity('vip', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-summary">
+                        <div class="summary-title">Booking Summary</div>
+                        <div id="summary-items">
+                            <!-- Will be populated by JavaScript -->
+                            <div class="summary-row">
+                                <div>No tickets selected</div>
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="summary-row total-row">
+                            <div>Total</div>
+                            <div id="total-amount">₹0.00</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email"  id="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time">Preferred Time</label>
+                        <select id="time" disabled>
+                            <option value="">Select a date first</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" placeholder="Any special requests or information"></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn" id="summary-btn">View Booking Summary</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="main.js"></script>
+    <script src="validation.js"></script>
+</body>
+</html>
